@@ -1,0 +1,128 @@
+{% extends 'main/base.html' %}
+{% load humanize %}
+
+{% block title %}
+Portfolio
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+  ul {
+        margin-top: 25px;  
+    }
+
+    li {
+        margin-bottom: 5px; 
+    }
+
+  table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+  }
+
+  th, td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+  }
+
+  th {
+      background-color: #f2f2f2;
+  }
+</style>
+
+  <div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>{{ username }}'s Portfolio</h1>
+        </div>
+        <div class="col text-end">
+            {% if is_following %}
+                <form method="POST" action="{% url 'unfollow_user' username %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Unfollow</button>
+                </form>
+            {% else %}
+                <form method="POST" action="{% url 'follow_user' username %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Follow</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+  </div>
+  <hr class="my-4">
+
+  <p>Total Income: {{ portfolio.total_income|floatformat:2|intcomma }} USD</p>
+  <p>Total Expenditure: {{ portfolio.total_expenditure|floatformat:2|intcomma }} USD</p>
+  <p>Profit: {{ portfolio.profit|floatformat:2|intcomma }} USD</p>
+  <p>Current Value: {{ portfolio.current_value|floatformat:2|intcomma }} USD</p>
+  <hr class="my-4">
+
+
+  <h3>Stocks in Portfolio</h3>
+  <div style="margin-top: 30px;">  
+    {% if portfolio.portfoliostock_set.all %}
+      <table border="1">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Name</th>
+          <th>Quantity</th>
+          <th>Price per Share</th>
+          <th>Current Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for portfolio_stock in portfolio.portfoliostock_set.all %}
+          {% if portfolio_stock.quantity > 0 %}
+          <tr onclick="rowClicked('{{ stock.symbol }}')">
+            <td><a href="{% url 'candlestick_view' portfolio_stock.stock.symbol %}">{{ portfolio_stock.stock.symbol }}</a></td>
+              <td>{{ portfolio_stock.stock.name }}</td>
+              <td>{{ portfolio_stock.quantity|intcomma }}</td>
+              <td>{{ portfolio_stock.price_per_share|floatformat:2|intcomma }}</td>
+              <td>
+                <font color="{% if portfolio_stock.current_price > portfolio_stock.price_per_share %}green{% else %}red{% endif %}">
+                {{ portfolio_stock.current_price }}
+            </font></td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p>Nothing in the portfolio.</p>
+    {% endif %}
+  </div>
+
+
+<h2>Transaction History</h2>
+{% if transaction_history %}
+    <ul>
+        {% for transaction in transaction_history|slice:":15" %}
+        <li>
+          {{ transaction.date|date:"F d, Y" }} - 
+          {% if transaction.transaction_type == 'buy' %}
+              Bought
+          {% elif transaction.transaction_type == 'sell' %}
+              Sold
+          {% endif %}
+          {{ transaction.quantity }} shares of {{ transaction.stock.symbol }} at ${{ transaction.price_per_share }}
+      </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No transactions yet.</p>
+{% endif %}
+
+<script>
+  function rowClicked(symbol) {
+      console.log("Row clicked:", symbol);
+  }
+</script>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+  <h2>Transaction</h2>
+  <hr class="my-4">
+
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+
+  {% for message in messages %}
+    
+    <div class="alert alert-danger" id="message_container">
+           {{ message }}
+    </div>
+
+
+{% endfor %}
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div style="margin-top: 25px;">
+      <button type="submit" class="btn btn-success">Submit Transaction</button>
+    </div>
+  </form>
+{% endblock %}

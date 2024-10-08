@@ -1,0 +1,112 @@
+{% extends 'main/base.html' %}
+{% load humanize %}
+
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+
+<head>
+    <title>Stock Market Tracker</title>
+    <style>
+        body {
+            margin: 20px 0 0 0;  
+            overflow-x: hidden;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px; 
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .pagination {
+            margin-top: 20px; 
+        }
+
+        .search-bar {
+            margin-top: 20px;  
+        }
+
+    </style>
+
+</head>
+
+<body>
+    <h1>Stock Market Tracker</h1>
+
+    <div class="search-bar">
+        <form action="" method="get">
+            <label for="search">Search:</label>
+            <input type="text" id="search" name="search" placeholder="Enter stock symbol...">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Open Price</th>
+                <th>High Price</th>
+                <th>Low Price</th>
+                <th>Close Price</th>
+                <th>Volume</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stocks_page %}
+                <tr onclick="rowClicked('{{ stock.symbol }}')">
+                    <td><a href="{% url 'candlestick_view' stock.symbol %}">{{ stock.symbol }}</a></td>
+                    <td>{{ stock.name }}</td>
+                    <td>{{ stock.open_price }}</td>
+                    <td>{{ stock.high_price }}</td>
+                    <td>{{ stock.low_price }}</td>
+                    <td>{{ stock.close_price }}</td>
+                    <td>{{ stock.volume|intcomma }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if stocks_page.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ stocks_page.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ stocks_page.number }} of {{ stocks_page.paginator.num_pages }}.
+            </span>
+
+            {% if stocks_page.has_next %}
+                <a href="?page={{ stocks_page.next_page_number }}">next</a>
+                <a href="?page={{ stocks_page.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    <div style="height: 40px;"></div>
+</body>
+</html>
+
+<script>
+    function rowClicked(symbol) {
+        console.log("Row clicked:", symbol);
+    }
+</script>
+
+{% endblock %}
