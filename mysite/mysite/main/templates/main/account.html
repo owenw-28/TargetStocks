@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<head>
+    <title>Account</title>
+</head>
+
+<div class="container mt-5">
+    <h1 class="mb-4">Account Page</h1>
+    <hr class="my-4">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">User Information</h5>
+            <hr>
+            <p><strong>Username:</strong> {{ user_profile.user.username }}</p>
+            <p><strong>First Name:</strong> {{ user_profile.user.first_name }}</p>
+            <p><strong>Last Name:</strong> {{ user_profile.user.last_name }}</p>
+            <p><strong>Email Address:</strong> {{ user_profile.user.email }}</p>
+            <p><a href="{% url 'followers_list' %}">Followers: {{ followers_count }}</a></p>
+            <p><a href="{% url 'following_list' %}">Following: {{ following_count }}</a></p>
+        </div>
+    </div>
+    <div class="mt-4">
+        <a href="{% url 'password_reset' %}" class="btn btn-secondary">Change Password</a>
+    </div>
+</div>
+
+{% endblock %}

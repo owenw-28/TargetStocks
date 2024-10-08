@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+{% block content %}
+<html lang="en">
+
+<head>
+    <title>Candlestick View</title>
+
+    <style>
+        h1 {
+            font-family: 'Helvetica', sans-serif; 
+            text-align: center; 
+            position: absolute; 
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%); 
+            margin-top: 50px; 
+            }
+
+        #candlestick-chart {
+            margin-top: 100px; 
+            height: 700px;    
+            width: 100%;      
+        }
+    </style>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+</head>
+
+<body>
+
+    <h1>Candlestick graph for symbol: {{ stock_symbol }}</h1>
+
+    <div id="candlestick-chart" style="height: 500px;"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var candlestickData = JSON.parse("{{candlestick_data|escapejs}}");
+            var dateBought = JSON.parse("{{ buy_dates|escapejs }}");
+            var dateSold = JSON.parse("{{ sell_dates|escapejs }}");
+
+            console.log(dateBought)
+            console.log(dateSold)
+
+            var myChart = echarts.init(document.getElementById('candlestick-chart'));
+
+            var marklineDataBuy = dateBought.map(function (date) {
+                return {
+                xAxis: date,
+                lineStyle: {
+                    color: '#678CEC',
+                    type: 'dashed',
+                    width: 2,
+                },
+                label: {
+                        show: true,
+                        position: 'middle',
+                        formatter: 'Date Bought',
+                    },
+                };
+            });
+
+            var marklineDataSell = dateSold.map(function (date) {
+                return {
+                xAxis: date,
+                lineStyle: {
+                    color: '#D49BAE',
+                    type: 'dashed',
+                    width: 2,
+                },
+                label: {
+                        show: true,
+                        position: 'middle',
+                        formatter: 'Date Sold',
+                    },
+                };
+            });
+
+            var marklineData = marklineDataBuy.concat(marklineDataSell);
+
+            var option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                xAxis: {
+                    data: candlestickData.map(function (item) { return item.date; })
+                },
+                yAxis: {
+                    scale: true
+                },
+                dataZoom: [
+                    {
+                    type: 'inside',
+                    start: 0,
+                    end: 100,
+                    minValueSpan: 10
+                    },
+                    {
+                    show: true,
+                    type: 'slider',
+                    bottom: 60,
+                    start: 98,
+                    end: 100,
+                    minValueSpan: 10
+                    }
+                ],
+                series: [{
+                    type: 'candlestick',
+                    data: candlestickData.map(function (item) {
+                        return [item.open, item.close, item.low, item.high];
+                    }),
+                    itemStyle: {
+                        color0: '#eb5454',
+                        color: '#47b262',
+                        borderColor0: '#eb5454',
+                        borderColor: '#47b262',
+                        borderWidth: 1   
+                    },
+                    markLine: {
+                        symbol: ['none'],
+                        data: marklineData,
+                        },        
+                }],
+            };
+
+            myChart.setOption(option);
+
+        });
+
+        
+
+    </script>
+
+<button onclick="goBack()">Go Back</button>
+
+<script>
+    function goBack() {
+        window.location.href = document.referrer;
+    }
+</script>
+
+</body>
+
+</html>
+
+{% endblock %}
