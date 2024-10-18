@@ -1,2 +1,2 @@
-# A-Level-Coursework
-This was my project for the NEA component of the AQA A Level Computer Science examinations for 2024
+# TargetStocks
+This is a website I made to generate recommendations for stock trading.
