@@ -226,3 +226,4 @@ class Recommender:
             stock = Stock.objects.get(symbol=symbol)
             stock.recommendation = 'sell'
             stock.save()
+            
