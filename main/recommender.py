@@ -145,6 +145,8 @@ class Recommender:
 
         ichimoku_sign = (pl.col('conversion line') - pl.col('base line')).sign()
 
+        #Link: https://stackoverflow.com/questions/77206989/polars-technical-indicators-and-strategy
+        #Author: Wayoshi
         df = df.with_columns(    
             signal_MACD = (
             pl.when(MACD_sign.is_first_distinct().over(MACD_sign.rle_id()))
