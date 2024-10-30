@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = 'Populate the Stock model with initial data'
 
     def handle(self, *args, **kwargs):
-        finnhub_client = finnhub.Client(api_key="cmk23m1r01qi6gquk9p0cmk23m1r01qi6gquk9pg")
+        finnhub_client = finnhub.Client(api_key="")
 
         list_of_companydata = finnhub_client.stock_symbols('US')
 
